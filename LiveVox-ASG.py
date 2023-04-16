@@ -2,7 +2,7 @@ import boto3
 import subprocess
 from datetime import date
 
-session = boto3.Session(profile_name="default")
+session = boto3.Session(profile_name="default", region_name="ap-south-1")
 ec2_inst = session.client(service_name='ec2')
 
 # Creating Launch Template
@@ -21,7 +21,7 @@ template_id = launch_tp['LaunchTemplate']['LaunchTemplateId']
 
 # Creating ASG from above Launch template
 asg = session.client('autoscaling').create_auto_scaling_group(
-    AutoScalingGroupName = "LiveVox-ASG",
+    AutoScalingGroupName = "lv-test-cpu",
     LaunchTemplate={
         'LaunchTemplateId': template_id,
     },
@@ -29,9 +29,9 @@ asg = session.client('autoscaling').create_auto_scaling_group(
     MaxSize=6,
     DesiredCapacity=3,
     AvailabilityZones=[
-        "us-east-1a",
-        "us-east-1b",
-        "us-east-1c"
+        "ap-south-1a",
+        "ap-south-1b",
+        "ap-south-1c"
     ]
 )
 
@@ -40,6 +40,6 @@ subprocess.run('aws ec2 describe-instances --query Reservations[].Instances[].[L
 
 # Describing Scheduled actions
 response = session.client('autoscaling').describe_scheduled_actions(
-    AutoScalingGroupName = "LiveVox-ASG"
+    AutoScalingGroupName = "lv-test-cpu"
 )
 print(response)
